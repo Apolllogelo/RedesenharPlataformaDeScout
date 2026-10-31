@@ -1,0 +1,10 @@
+{
+  "description": "Ajuda profissionais do futebol a analisar o desempenho e o desenvolvimento de jogadores com estatísticas e ferramentas de scout.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
