@@ -1,4 +1,4 @@
-import { useMemo, useState, type ReactNode } from 'react'
+import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { toPng } from 'html-to-image'
 
 type Player = {
@@ -172,6 +172,17 @@ const icons = {
   arrow: (
     <Icon size={16}>
       <path d="m5 12 4 4L19 6" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" />
+    </Icon>
+  ),
+  sun: (
+    <Icon size={14}>
+      <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="1.7" />
+      <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M17.66 6.34l-1.41-1.41" stroke="currentColor" strokeLinecap="round" strokeWidth="1.7" />
+    </Icon>
+  ),
+  moon: (
+    <Icon size={14}>
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79" stroke="currentColor" strokeLinecap="round" strokeWidth="1.7" />
     </Icon>
   ),
 }
@@ -764,6 +775,21 @@ export default function App() {
   const [activePage, setActivePage] = useState<'dashboard' | 'players' | 'profiles' | 'shortlist' | 'player'>('dashboard')
   const [isExporting, setIsExporting] = useState(false)
   const [showImport, setShowImport] = useState(false)
+  const [theme, setTheme] = useState<'light' | 'dark'>('light')
+
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === 'light' ? 'dark' : 'light'))
+  }
+
+  useEffect(() => {
+    const stored = localStorage.getItem('scoutboard-theme') as 'light' | 'dark' | null
+    if (stored) setTheme(stored)
+  }, [])
+
+  useEffect(() => {
+    localStorage.setItem('scoutboard-theme', theme)
+    document.documentElement.dataset.theme = theme
+  }, [theme])
 
   const selected = players.find((player) => player.id === selectedId) ?? players[0]
   const filteredPlayers = useMemo(
@@ -819,7 +845,7 @@ export default function App() {
   }
 
   return (
-    <div className="app-shell">
+    <div className="app-shell" data-theme={theme}>
       <aside className={mobileNav ? 'sidebar sidebar-open' : 'sidebar'}>
         <div className="brand">
           <div className="brand-mark">SB</div>
@@ -861,6 +887,14 @@ export default function App() {
           }[activePage]}</strong></div>
           <div className="top-actions">
             <button className="icon-button" aria-label="Buscar">{icons.search}</button>
+            <button
+              className="icon-button"
+              aria-label={theme === 'light' ? 'Ativar modo escuro' : 'Ativar modo claro'}
+              onClick={toggleTheme}
+              title={theme === 'light' ? 'Modo escuro' : 'Modo claro'}
+            >
+              {theme === 'light' ? icons.moon : icons.sun}
+            </button>
             <button
               className="download-button"
               data-export-ignore="true"
